@@ -3,12 +3,22 @@ command: "pmset -g batt | grep \"%\" | awk 'BEGINN { FS = \";\" };{ print $3,$2 
 refreshFrequency: 20000
 
 render: () ->
-  '<div id="batt"></div>'
+  '''
+  <div id="batt">
+    <div id="circle-battery" class="wave">
+      <p class="percent"></p>
+      <p class="capt"></p>
+      <img src="" width="30" />
+    </div>
+    <div id="counter" class="waveb"></div>
+  </div>
+  '''
 
-update: (output) ->
+update: (output, domEl) ->
   outputParts = output.split(' ')
   percent = parseInt(outputParts[1].split('%')[0])
   source = outputParts[0]
+  domEl = $(domEl)
 
   if source is 'discharging'
     power = "Battery"
@@ -28,27 +38,32 @@ update: (output) ->
     when 90 < percent < 100 then '90'
     when percent == 100 then '100'
 
-  $('#batt').html("""
-    <div id="circle-battery" class="wave wave#{wave}">
-      <p>#{percent}%</p>
-      <p class="capt">#{power}</p>
-      <img src="circular-liquid-battery.widget/#{icon}.png" width="30" />
-      </div>
-    <div id="counter" class="waveb waveb#{wave}"></div>
-  """)
+  $(domEl.find('#circle-battery')[0]).addClass("wave#{wave}")
+  $(domEl.find('.percent')[0]).text("#{percent}%")
+  $(domEl.find('.capt')[0]).text(power)
+  $(domEl.find('img')[0]).attr('src', "circular-liquid-battery.widget/#{icon}.png")
+  $(domEl.find('#counter')[0]).addClass("waveb#{wave}")
 
 style: """
+  @font-face
+    font-family 'Dosis'
+    font-style normal
+    font-weight 200
+    src local('Dosis ExtraLight'), local('Dosis-ExtraLight'), url(http://fonts.gstatic.com/s/dosis/v4/zuuDDmIlQfJeEM3Uf6kkpnYhjbSpvc47ee6xR_80Hnw.woff) format('woff')
+
   base = 'circular-liquid-battery.widget/'
 
   #batt
     top 300px
     left 200px
     position relative
+    width 158px
+    height 158px
 
   #counter
     position absolute
-    top 100px
-    left 100px
+    top 2px
+    left 2px
     width 154px
     height 154px
     border-radius 50%
@@ -56,8 +71,8 @@ style: """
 
   #circle-battery
     position absolute
-    left 100px
-    right 100px
+    left 0
+    right 0
     width 150px
     height 150px
     border 4px solid white
