@@ -3,7 +3,7 @@ command:"pmset -g batt | grep \"%\" | awk 'BEGINN { FS = \";\" };{ print $3,$2 }
 refreshFrequency: 20000,
 
 render: function () {
-	$('head').append('<link rel="stylesheet" href="cb.css" type="text/css" /><link href="http://fonts.googleapis.com/css?family=Dosis:200,300" rel="stylesheet" type="text/css">');
+	$('head').append('<link rel="stylesheet" href="circular-liquid-battery.widget/cb.css" type="text/css" /><link href="http://fonts.googleapis.com/css?family=Dosis:200,300" rel="stylesheet" type="text/css">');
 	return "<div id='batt'></div>";
 	},
 update: function (output){
@@ -16,10 +16,10 @@ update: function (output){
 	var percentagebg = "";
 	if (a == "discharging"){
 		power = "Battery";
-		image = '<img src="bat.png" width="30px">';
+		image = '<img src="circular-liquid-battery.widget/bat.png" width="30px">';
 	}else{
 		power = "Charging"
-		image = '<img src="charge.png" width="30px">';
+		image = '<img src="circular-liquid-battery.widget/charge.png" width="30px">';
 	}
 	if(percent[0]<=20){
 		percentage = "wave20";
