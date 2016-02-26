@@ -9,48 +9,38 @@ render: () ->
   '<div id="batt"></div>'
 
 update: (output) ->
-  arr = output.split(' ')
-  percent = arr[1].split('%')
-  a = arr[0]
-  power = ""
-  image = ""
-  percentage = ""
-  percentagebg = ""
+  outputParts = output.split(' ')
+  percent = parseInt(outputParts[1].split('%')[0])
+  source = outputParts[0]
 
-  if a is 'discharging'
+  console.log(percent)
+  console.log(source)
+
+  if source is 'discharging'
     power = "Battery"
-    image = '<img src="circular-liquid-battery.widget/bat.png" width="30px">'
+    icon = 'bat'
+  else if source is 'charged'
+    power = 'Charged'
+    icon = 'charge'
   else
     power = 'Charging'
-    image = '<img src="circular-liquid-battery.widget/charge.png" width="30px">'
+    icon = 'charge'
 
-  if percent[0] <= 20
-    percentage = 'wave20'
-    percentagebg = 'waveb20'
-  else if 20 < percent[0] < 35
-    percentage = "wave35"
-    percentagebg = "waveb35"
-  else if 20 < percent[0] < 50
-    percentage = "wave50"
-    percentagebg = "wave50"
-  else if 50 < percent[0] < 80
-    percentage = "wave80"
-    percentagebg = "waveb80"
-  else if 90 < percent[0] < 100
-    percentage = "wave90"
-    percentagebg = "waveb90"
-  else if percent[0] == 100
-    percentage = "wave100"
-    percentagebg = "waveb100"
-    power = "Charged"
+  wave = switch
+    when percent <= 20 then '20'
+    when 20 < percent <= 35 then '35'
+    when 35 < percent <= 50 then '50'
+    when 50 < percent <= 90 then '80'
+    when 90 < percent < 100 then '90'
+    when percent == 100 then '100'
 
   $('#batt').html("""
-    <div id="circle-battery" class="#{percentage}">
-      <p>#{percent[0]}%</p>
+    <div id="circle-battery" class="wave#{wave}">
+      <p>#{percent}%</p>
       <p class="capt">#{power}</p>
-      #{image}
+      <img src="circular-liquid-battery.widget/#{icon}.png" width="30" />
       </div>
-    <div id="counter" class="#{percentagebg}"></div>
+    <div id="counter" class="waveb#{wave}"></div>
   """)
 
 style: """
