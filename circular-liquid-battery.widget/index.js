@@ -47,7 +47,7 @@ update: function (output){
 		power = "Charged";
 	}
 	$("#batt").html('<div id="circle-battery" class="'+percentage+'"><p>'+percent[0]+'%</p><p class="capt">'+power+'</p>'+image+'</div><div id="counter" class="'+percentagebg+'"></div>');
-		
+
 	},
 
 style: "        \n\
