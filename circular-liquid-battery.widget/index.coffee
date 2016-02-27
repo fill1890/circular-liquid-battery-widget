@@ -9,7 +9,7 @@ render: () ->
     <div id="circle-battery" class="wave">
       <p class="percent"></p>
       <p class="capt"></p>
-      <img src="" width="30" />
+      <svg class="icon" viewbox="0 0 1200 1200"></svg>
     </div>
     <div id="counter" class="waveb"></div>
   </div>
@@ -26,13 +26,13 @@ update: (output, domEl) ->
 
   if source is 'discharging'
     power = "Battery"
-    icon = 'bat'
+    icon = @batteryImage
   else if source is 'charged'
     power = 'Charged'
-    icon = 'charge'
+    icon = @chargeImage
   else
     power = 'Charging'
-    icon = 'charge'
+    icon = @chargeImage
 
   wave = switch
     when percent <= 20 then '20'
@@ -42,10 +42,11 @@ update: (output, domEl) ->
     when 90 < percent < 100 then '90'
     when percent == 100 then '100'
 
+
   $(domEl.find('#circle-battery')[0]).addClass("wave#{wave}")
   $(domEl.find('.percent')[0]).text("#{percent}%")
   $(domEl.find('.capt')[0]).text(power)
-  $(domEl.find('img')[0]).attr('src', "circular-liquid-battery.widget/#{icon}.png")
+  domEl.find('.icon')[0].innerHTML = icon
   $(domEl.find('#counter')[0]).addClass("waveb#{wave}")
 
 style: """
@@ -103,10 +104,13 @@ style: """
     text-align center
     z-index 2
 
-  #circle-battery img
+  #circle-battery .icon
     position absolute
     top 115px
     left 60px
+    width 30px
+    height 30px
+    fill white
 
   #circle-battery .capt
     margin-top -50px
@@ -178,3 +182,21 @@ style: """
           background-position: 200px bottom;
 
 """
+
+chargeImage: '<polygon points="808,0 234,699 566,699 393,1200 969,501 636,501 "/>'
+batteryImage: '''
+<path d="M1013,250c57.1,0,109.1,52.2,109.1,104.5v109.7h67.5c5.2,0,10.4,5.2,10.4,10.4v250.7
+	c0,5.2-5.2,10.4-10.4,10.4h-67.5v109.7c0,52.2-51.9,104.5-109.1,104.5H103.9C51.9,950,0,897.8,0,845.5v-491
+	C0,302.2,51.9,250,103.9,250H1013z M103.9,302.2c-26,0-51.9,26.1-51.9,52.2v491c0,26.1,26,52.2,51.9,52.2H1013
+	c31.2,0,57.1-26.1,57.1-52.2l0-156.7c0-5.2,5.2-10.4,10.4-10.4h62.3V521.6h-62.3c-5.2,0-10.4-5.2-10.4-10.4l0-156.7
+	c0-26.1-26-52.2-57.1-52.2H103.9z"/>
+<path d="M103.9,814.2c0,47,62.3,47,62.3,0V385.8c0-47-62.3-47-62.3,0V814.2z"/>
+<path d="M213,814.2c0,47,62.3,47,62.3,0V385.8c0-47-62.3-47-62.3,0V814.2z"/>
+<path d="M316.9,814.2c0,47,62.3,47,62.3,0V385.8c0-47-62.3-47-62.3,0V814.2z"/>
+<path d="M426,814.2c0,47,62.3,47,62.3,0V385.8c0-47-62.3-47-62.3,0V814.2z"/>
+<path d="M529.2,811.6c0,47,62.3,47,62.3,0V383.2c0-47-62.3-47-62.3,0V811.6z"/>
+<path d="M638.3,811.6c0,47,62.3,47,62.3,0V383.2c0-47-62.3-47-62.3,0V811.6z"/>
+<path d="M742.9,814.2c0,47,62.3,47,62.3,0V385.8c0-47-62.3-47-62.3,0V814.2z"/>
+<path d="M851.9,814.2c0,47,62.3,47,62.3,0V385.8c0-47-62.3-47-62.3,0V814.2z"/>
+<path d="M955.8,814.2c0,47,62.3,47,62.3,0V385.8c0-47-62.3-47-62.3,0V814.2z"/>
+'''
