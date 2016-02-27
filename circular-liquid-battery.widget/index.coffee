@@ -1,12 +1,19 @@
+###
+Animation mode options:
+1: Double-wave flowing animation
+2: Flat fill with pulsing intensity
+3: Flat fill with no animation (Least CPU intensive)
+Will default to 3 if invalid or no value.
+###
+animationMode: 3
+
 command: "pmset -g batt | grep \"%\""
 
 refreshFrequency: 20000
 
 render: () ->
-  '''
-  <div id="batt">
-    <canvas id="blur"></canvas>
-    <div id="circle-battery" class="wave">
+  if @animationMode is 1
+    background = """
       <svg viewBox="0 0 316 168" width="316" height="168" class="wavebg">
         <path d="M0,5c0,0,17.6,5.1,39.6,5.1c19.3,0,29.9-2.5,39.5-5C88.8,2.7,98.8,0,118.7,0s29.9,2.6,39.5,5.1
           c9.6,2.5,19,5,39.5,5c20.6,0,29.9-2.3,39.5-5c9.6-2.7,17.6-5.1,39.4-5.1c20,0,39.4,5.1,39.4,5.1V168H0.1L0,5z"/>
@@ -14,14 +21,24 @@ render: () ->
       <svg viewBox="0 0 316 168" width="316" height="168" class="wavefg">
         <path d="M0,5c0,0,17.6,5.1,39.6,5.1c19.3,0,29.9-2.5,39.5-5C88.8,2.7,98.8,0,118.7,0s29.9,2.6,39.5,5.1
           c9.6,2.5,19,5,39.5,5c20.6,0,29.9-2.3,39.5-5c9.6-2.7,17.6-5.1,39.4-5.1c20,0,39.4,5.1,39.4,5.1V168H0.1L0,5z"/>
-      </svg>
+        </svg>
+    """
+  else if @animationMode is 2
+    background = '<div class="flatfill pulse"></div>'
+  else
+    background = '<div class="flatfill"></div>'
+
+  """
+  <div id="batt">
+    <canvas id="blur"></canvas>
+    <div id="circle-battery" class="wave">
+      #{background}
       <p class="percent"></p>
       <p class="capt"></p>
       <svg class="icon" viewbox="0 0 1200 1200"></svg>
     </div>
-    <div id="counter" class="waveb"></div>
   </div>
-  '''
+  """
 
 afterRender: (domEl) ->
   uebersicht.makeBgSlice(el) for el in $(domEl).find('#blur')
@@ -51,25 +68,22 @@ update: (output, domEl) ->
     power = 'Charging'
     icon = @chargeImage
 
-  wave = switch
-    when percent <= 20 then '20'
-    when 20 < percent <= 35 then '35'
-    when 35 < percent <= 50 then '50'
-    when 50 < percent <= 90 then '80'
-    when 90 < percent < 100 then '90'
-    when percent == 100 then '100'
-
-  wavePosition = 150 - percent / 100 * 160 - 10
+  bgPosition = 150 - percent / 100 * 160 - 10 + 4
   fgcolor = if percent <= 20 then 'f03844' else '2ce64c'
   bgcolor = if percent <= 20 then 'dd2b36' else '2fb93f'
+  pulseName = if percent <= 20 then 'pulse-animation-red' else 'pulse-animation'
 
-  #$(domEl.find('#circle-battery')[0]).addClass("wave#{wave}")
-  $(domEl.find('.wavefg')[0]).css({top: "#{wavePosition + 4}px", 'fill': "##{fgcolor}"})
-  $(domEl.find('.wavebg')[0]).css({top: "#{wavePosition}px", 'fill': "##{bgcolor}"})
+  if @animationMode is 1
+    $(domEl.find('.wavefg')[0]).css({top: "#{bgPosition}px", 'fill': "##{fgcolor}"})
+    $(domEl.find('.wavebg')[0]).css({top: "#{bgPosition - 4}px", 'fill': "##{bgcolor}"})
+  else if @animationMode is 2
+    $(domEl.find('.flatfill')[0]).css({top: "#{bgPosition + 12}px", 'animation-name': "#{pulseName}"})
+  else
+    $(domEl.find('.flatfill')[0]).css({top: "#{bgPosition + 12}px", 'background-color': "##{fgcolor}"})
+
   $(domEl.find('.percent')[0]).text("#{percent}%")
   $(domEl.find('.capt')[0]).text(power)
   domEl.find('.icon')[0].innerHTML = icon
-  $(domEl.find('#counter')[0]).addClass("waveb#{wave}")
 
 style: """
   @font-face
@@ -141,22 +155,48 @@ style: """
     font-size 10px
 
   .wavefg
-    position: absolute
-    left: 0
-    z-index: -5
+  .wavebg
+    position absolute
+    left 0
+    z-index -5
+
+  .wavefg
     animation: wave-animation 1s infinite linear
 
   .wavebg
-    position: absolute
-    left: 0
-    z-index: -5
     animation: wave-animation 2s infinite linear
 
-  @-webkit-keyframes wave-animation
-      from
-          transform: translateX(-158px)
-      to
-          transform: translateX(0px)
+  .flatfill
+    position absolute
+    left 0
+    z-index -5
+    width 154px
+    height 154px
+
+  .pulse
+    animation: pulse-animation 4s infinite linear
+
+  @keyframes wave-animation
+    from
+      transform: translateX(-158px)
+    to
+      transform: translateX(0px)
+
+  @keyframes pulse-animation
+    0%
+      background-color #2ce64c
+    50%
+      background-color #2fb93f
+    100%
+      background-color #2ce64c
+
+  @keyframes pulse-animation-red
+    0%
+      background-color #f03844
+    50%
+      background-color #dd2b36
+    100%
+      background-color #f03844
 
 """
 
