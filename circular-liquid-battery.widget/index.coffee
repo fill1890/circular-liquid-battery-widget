@@ -7,6 +7,14 @@ render: () ->
   <div id="batt">
     <canvas id="blur"></canvas>
     <div id="circle-battery" class="wave">
+      <svg viewBox="0 0 316 168" width="316" height="168" class="wavebg">
+        <path d="M0,5c0,0,17.6,5.1,39.6,5.1c19.3,0,29.9-2.5,39.5-5C88.8,2.7,98.8,0,118.7,0s29.9,2.6,39.5,5.1
+          c9.6,2.5,19,5,39.5,5c20.6,0,29.9-2.3,39.5-5c9.6-2.7,17.6-5.1,39.4-5.1c20,0,39.4,5.1,39.4,5.1V168H0.1L0,5z"/>
+      </svg>
+      <svg viewBox="0 0 316 168" width="316" height="168" class="wavefg">
+        <path d="M0,5c0,0,17.6,5.1,39.6,5.1c19.3,0,29.9-2.5,39.5-5C88.8,2.7,98.8,0,118.7,0s29.9,2.6,39.5,5.1
+          c9.6,2.5,19,5,39.5,5c20.6,0,29.9-2.3,39.5-5c9.6-2.7,17.6-5.1,39.4-5.1c20,0,39.4,5.1,39.4,5.1V168H0.1L0,5z"/>
+      </svg>
       <p class="percent"></p>
       <p class="capt"></p>
       <svg class="icon" viewbox="0 0 1200 1200"></svg>
@@ -51,8 +59,13 @@ update: (output, domEl) ->
     when 90 < percent < 100 then '90'
     when percent == 100 then '100'
 
+  wavePosition = 150 - percent / 100 * 160 - 10
+  fgcolor = if percent <= 20 then 'f03844' else '2ce64c'
+  bgcolor = if percent <= 20 then 'dd2b36' else '2fb93f'
 
-  $(domEl.find('#circle-battery')[0]).addClass("wave#{wave}")
+  #$(domEl.find('#circle-battery')[0]).addClass("wave#{wave}")
+  $(domEl.find('.wavefg')[0]).css({top: "#{wavePosition + 4}px", 'fill': "##{fgcolor}"})
+  $(domEl.find('.wavebg')[0]).css({top: "#{wavePosition}px", 'fill': "##{bgcolor}"})
   $(domEl.find('.percent')[0]).text("#{percent}%")
   $(domEl.find('.capt')[0]).text(power)
   domEl.find('.icon')[0].innerHTML = icon
@@ -112,6 +125,8 @@ style: """
     font-size 46px
     text-align center
     z-index 2
+    overflow hidden
+    transform: translateZ(0)
 
   #circle-battery .icon
     position absolute
@@ -125,70 +140,23 @@ style: """
     margin-top -50px
     font-size 10px
 
-  .wave
-  .waveb
-    opacity 1
-    background-repeat repeat-x
+  .wavefg
+    position: absolute
+    left: 0
+    z-index: -5
+    animation: wave-animation 1s infinite linear
 
-  .wave
-    animation wave-animation 1s infinite linear
-
-  .waveb
-    animation wave-animation 2s infinite linear
-
-  .wave20
-      background-image url(base + "r1.png")
-      background-size 200px 35px
-
-  .waveb20
-      background-image url(base + "r2.png")
-      background-size 200px 39px
-
-  .wave35
-      background-image url(base + "g1.png")
-      background-size 200px 65px
-
-  .waveb35
-      background-image url(base + "g2.png")
-      background-size 200px 69px
-
-  .wave50
-      background-image url(base + "g1.png")
-      background-size 200px 105px
-
-  .waveb50
-      background-image url(base + "g2.png")
-      background-size 200px 109px
-
-  .wave80
-      background-image url(base + "g1.png")
-      background-size 200px 165px
-
-  .waveb80
-      background-image url(base + "g2.png")
-      background-size 200px 169px
-
-  .wave90
-      background-image url(base + "g1.png")
-      background-size 200px 195px
-
-  .waveb90
-      background-image url(base + "g2.png")
-      background-size 200px 199px
-
-  .wave100
-      background-image url(base + "g1.png")
-      background-size 200px 235px
-
-  .waveb100
-      background-image url(base + "g2.png")
-      background-size 200px 235px
+  .wavebg
+    position: absolute
+    left: 0
+    z-index: -5
+    animation: wave-animation 2s infinite linear
 
   @-webkit-keyframes wave-animation
       from
-          background-position: 0 bottom;
+          transform: translateX(-158px)
       to
-          background-position: 200px bottom;
+          transform: translateX(0px)
 
 """
 
