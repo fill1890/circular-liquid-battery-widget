@@ -5,6 +5,7 @@ refreshFrequency: 20000
 render: () ->
   '''
   <div id="batt">
+    <canvas id="blur"></canvas>
     <div id="circle-battery" class="wave">
       <p class="percent"></p>
       <p class="capt"></p>
@@ -13,6 +14,9 @@ render: () ->
     <div id="counter" class="waveb"></div>
   </div>
   '''
+
+afterRender: (domEl) ->
+  uebersicht.makeBgSlice(el) for el in $(domEl).find('#blur')
 
 update: (output, domEl) ->
   outputParts = output.split(' ')
@@ -52,6 +56,7 @@ style: """
     src local('Dosis ExtraLight'), local('Dosis-ExtraLight'), url(http://fonts.gstatic.com/s/dosis/v4/zuuDDmIlQfJeEM3Uf6kkpnYhjbSpvc47ee6xR_80Hnw.woff) format('woff')
 
   base = 'circular-liquid-battery.widget/'
+  bg-blur = 10px
 
   #batt
     top 300px
@@ -59,6 +64,20 @@ style: """
     position relative
     width 158px
     height 158px
+    border-radius 50%
+    overflow hidden
+    box-shadow 0 0 5px 3px rgba(0, 0, 0, 0.3)
+
+
+  #blur
+    position absolute
+    left -(bg-blur) + 4px
+    top -(bg-blur) + 4px
+    width 150px + 2*(bg-blur)
+    height 150px + 2*(bg-blur)
+    border-radius 50%
+    filter blur(10px)
+    z-index -1
 
   #counter
     position absolute
@@ -77,7 +96,6 @@ style: """
     height 150px
     border 4px solid white
     border-radius 50%
-    box-shadow 0 0 5px 3px rgba(0, 0, 0, 0.3)
     font-family 'Dosis', sans-serif
     color white
     font-weight 200
