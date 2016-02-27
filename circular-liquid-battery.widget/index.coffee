@@ -5,7 +5,11 @@ Animation mode options:
 3: Flat fill with no animation (Least CPU intensive)
 Will default to 3 if invalid or no value.
 ###
-animationMode: 3
+animationMode: 1
+
+# Distance from top and left of screen in pixels
+topPosition: 300
+leftPosition: 200
 
 command: "pmset -g batt | grep \"%\""
 
@@ -29,7 +33,7 @@ render: () ->
     background = '<div class="flatfill"></div>'
 
   """
-  <div id="batt">
+  <div id="batt" style="top: #{@topPosition}px; left: #{@leftPosition}px">
     <canvas id="blur"></canvas>
     <div id="circle-battery" class="wave">
       #{background}
@@ -96,15 +100,12 @@ style: """
   bg-blur = 10px
 
   #batt
-    top 300px
-    left 200px
     position relative
     width 158px
     height 158px
     border-radius 50%
     overflow hidden
     box-shadow 0 0 5px 3px rgba(0, 0, 0, 0.3)
-
 
   #blur
     position absolute
@@ -115,15 +116,6 @@ style: """
     border-radius 50%
     filter blur(10px)
     z-index -1
-
-  #counter
-    position absolute
-    top 2px
-    left 2px
-    width 154px
-    height 154px
-    border-radius 50%
-    z-index 1
 
   #circle-battery
     position absolute
