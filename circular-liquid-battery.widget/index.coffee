@@ -1,4 +1,4 @@
-command: "pmset -g batt | grep \"%\" | awk 'BEGINN { FS = \";\" };{ print $3,$2 }' | sed -e 's/-I/I/' -e 's/-0//' -e 's/;//' -e 's/;//'"
+command: "pmset -g batt | grep \"%\""
 
 refreshFrequency: 20000
 
@@ -19,9 +19,18 @@ afterRender: (domEl) ->
   uebersicht.makeBgSlice(el) for el in $(domEl).find('#blur')
 
 update: (output, domEl) ->
-  outputParts = output.split(' ')
-  percent = parseInt(outputParts[1].split('%')[0])
-  source = outputParts[0]
+  outputParts = output.split(';')
+  outputParts[0] = outputParts[0].trim().split(' ')[1]
+  outputParts = (x.trim() for x in outputParts)
+  index0 = parseInt(outputParts[0])
+
+  if 0 <= index0 <= 100
+    percent = index0
+    source = outputParts[1]
+  else
+    percent = parseInt(outputParts[1])
+    source = outputParts[0]
+
   domEl = $(domEl)
 
   if source is 'discharging'
