@@ -49,7 +49,10 @@ afterRender: (domEl) ->
 
 update: (output, domEl) ->
   outputParts = output.split(';')
-  outputParts[0] = outputParts[0].trim().split(' ')[1]
+  if outputParts[0].indexOf('\t') > 1
+    outputParts[0] = outputParts[0].trim().split('\t')[1]
+  else
+    outputParts[0] = outputParts[0].trim().split(' ')[1]
   outputParts = (x.trim() for x in outputParts)
   index0 = parseInt(outputParts[0])
 
